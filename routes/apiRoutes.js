@@ -12,7 +12,7 @@ module.exports = function (app) {
 //API POST requests
 
 app.post("/api/notes", function (req, res) {
-  if (tableData.length < 3) {
+  if (noteData.length < 3) {
     noteData.push(req.body);
     res.json(true);
   } else {
