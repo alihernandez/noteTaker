@@ -1,21 +1,42 @@
+var router = require("express").Router();
 // Load Data
-
-var noteData = require("../data/noteData");
-
+//file manipulation
+var fs = require("fs");
+var noteData = require("../db/db.json");
+var id = noteData.length+1
 //API GET requests
-module.exports = function (app) {
-  app.get("api/notes", function (req, res) {
-    res.json(noteData);
-  });
-};
+router.get("/api/notes", function (req, res) {
+  res.json(noteData);
+});
 
 //API POST requests
 
-app.post("/api/notes", function (req, res) {
-  if (noteData.length < 3) {
+router.post("/api/notes", function (req, res) {
+  console.log(req.body)
+
+  req.body.id= id++
     noteData.push(req.body);
-    res.json(true);
-  } else {
-    res.json(false);
-  }
+
+    fs.writeFile("./db/db.json",JSON.stringify(noteData), function(){
+      res.json(noteData);
+    })
+    
+
+
 });
+
+//delete route
+router.delete("/api/notes/:id", function(req, res){
+  var id = req.params.id
+  for (let i = 0; i < noteData.length; i++) {
+    if (noteData[i].id === parseInt(id)){
+      noteData.splice(i,1)
+    }
+  }
+  fs.writeFile("./db/db.json", JSON.stringify(noteData), function (){
+    res.json(noteData)
+  })
+  
+})
+
+module.exports = router;
